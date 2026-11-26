@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Leyra 商品购买页 — 3种全新颠覆方案对比</title>
+  <title>Leyra 商品详情页 — 方案A（3D卡片动效 + 独立规格卡片版）</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
@@ -30,6 +30,7 @@
       color: var(--l-ink);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
+      transition: background-color 0.22s ease, color 0.22s ease;
     }
     body.is-dark {
       --l-bg: #14120f;
@@ -54,7 +55,7 @@
     a { text-decoration: none; color: inherit; }
     .hidden { display: none !important; }
 
-    /* 顶部方案切换黑条 */
+    /* 顶部预览演示切换条 */
     .demo-bar {
       position: sticky; top: 0; z-index: 80;
       background: #191612; color: #f5f1e7;
@@ -62,7 +63,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.12);
     }
     .demo-bar-inner {
-      max-width: 1120px; margin: 0 auto;
+      max-width: 920px; margin: 0 auto;
       display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
     }
     .demo-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
@@ -78,7 +79,7 @@
     /* 网站正式导航栏 */
     .site-header { background: var(--l-surface); border-bottom: 1px solid var(--l-border); }
     .header-inner {
-      max-width: 1120px; margin: 0 auto; padding: 0 20px;
+      max-width: 920px; margin: 0 auto; padding: 0 20px;
       height: 62px; display: flex; align-items: center; justify-content: space-between;
     }
     .header-left { display: flex; align-items: center; gap: 28px; }
@@ -101,7 +102,315 @@
     }
     .dark-pill { background: var(--l-ink); color: var(--l-bg); border: none; }
 
-    /* 富文本通用样式 */
+    /* 主容器（单栏精致阅读流） */
+    .page-wrap { max-width: 920px; margin: 0 auto; padding: 22px 20px 145px; }
+    .top-bar-row {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+    }
+    .back-mini { display: inline-flex; align-items: center; gap: 5px; font-size: 13.5px; font-weight: 600; color: var(--l-ink-2); }
+    .back-mini:hover { color: var(--l-ink); }
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 7px;
+      font-size: 12px; font-weight: 700; color: var(--l-green);
+      background: var(--l-green-soft); padding: 5px 12px; border-radius: 999px;
+    }
+    .pulse-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--l-green);
+      animation: leyra-pulse 2s infinite;
+    }
+    @keyframes leyra-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(15, 122, 77, 0.5); }
+      70% { box-shadow: 0 0 0 7px rgba(15, 122, 77, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(15, 122, 77, 0); }
+    }
+
+    /* ==========================================================
+       核心亮点 1：紧凑横向橱窗头 + 原汁原味 Leyra 3D 动态会员卡！
+       ========================================================== */
+    .hero-showcase {
+      background: var(--l-surface);
+      border: 1px solid var(--l-border);
+      box-shadow: var(--l-shadow);
+      border-radius: 26px;
+      padding: 26px 30px;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 30px;
+      align-items: center;
+    }
+
+    /* 3D 卡片舞台（支持鼠标跟随 3D 倾斜折射 + 呼吸悬浮 + 切规格抽牌换卡动画） */
+    .card-stage-wrap {
+      position: relative;
+      perspective: 950px;
+      padding: 6px 0;
+    }
+    .card-breathe-holder {
+      animation: card-breathe 5.8s ease-in-out infinite;
+      transform-style: preserve-3d;
+    }
+    .card-stage-wrap:hover .card-breathe-holder {
+      animation-play-state: paused;
+    }
+    @keyframes card-breathe {
+      0%, 100% { transform: translateY(0px) rotate(-1.4deg); }
+      50% { transform: translateY(-6px) rotate(-0.4deg) rotateX(3deg) rotateY(-3deg); }
+    }
+
+    .deck-slot {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1.62 / 1;
+      transform-style: preserve-3d;
+    }
+
+    /* 底层叠放阴影卡（营造卡包立体感） */
+    .deck-underlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #3c362e, #211d18);
+      transform: translate(8px, 9px) rotate(2.6deg) scale(0.97);
+      opacity: 0.24;
+      pointer-events: none;
+      transition: transform 0.35s ease;
+    }
+    .card-stage-wrap:hover .deck-underlay {
+      transform: translate(12px, 13px) rotate(3.8deg) scale(0.97);
+    }
+
+    /* 主 3D 动态会员卡 */
+    .leyra-3d-card {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      padding: 20px 22px;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      isolation: isolate;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 24px 44px -14px rgba(24, 18, 12, 0.46), inset 0 0 0 1px rgba(255,255,255,0.22), inset 0 1px 0 rgba(255,255,255,0.42);
+      transform: rotateX(calc(var(--my, 0) * -10deg)) rotateY(calc(var(--mx, 0) * 12deg)) scale(var(--sc, 1));
+      transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.3, 1), box-shadow 0.35s ease;
+    }
+    .leyra-3d-card.is-tracking {
+      transition: transform 0.1s ease-out;
+    }
+
+    /* 右下装饰几何光环 */
+    .leyra-3d-card::before {
+      content: "";
+      position: absolute;
+      width: 140px; height: 140px; border-radius: 50%;
+      right: -28px; bottom: -92px;
+      border: 18px solid rgba(255,255,255,0.1);
+      pointer-events: none; z-index: 0;
+    }
+    /* 大号斜体水印字母 */
+    .card-watermark {
+      position: absolute;
+      right: 14px; top: 36px;
+      font-size: 86px; font-weight: 900; line-height: 1;
+      color: rgba(255,255,255,0.06);
+      letter-spacing: -0.04em;
+      pointer-events: none; z-index: 0;
+    }
+    /* 自动流光扫面动效 */
+    .card-shine-sweep {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 1;
+    }
+    .card-shine-sweep::after {
+      content: "";
+      position: absolute; top: -30%; bottom: -30%; left: -70%; width: 38%;
+      transform: skewX(-16deg);
+      background: linear-gradient(100deg, transparent, rgba(255,255,255,0.14) 42%, rgba(255,255,255,0.32) 50%, rgba(255,255,255,0.14) 58%, transparent);
+      animation: shine-sweep 5.6s ease-in-out 0.8s infinite;
+    }
+    @keyframes shine-sweep {
+      0% { left: -70%; }
+      26%, 100% { left: 140%; }
+    }
+    /* 鼠标跟随金属高光折射斑 */
+    .card-glare {
+      position: absolute; inset: 0; pointer-events: none; z-index: 2;
+      opacity: 0; transition: opacity 0.25s ease;
+      background: radial-gradient(240px 170px at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,0.34), transparent 65%);
+      mix-blend-mode: soft-light;
+    }
+    .leyra-3d-card.is-tracking .card-glare { opacity: 1; }
+
+    /* 切规格时的「抽牌飞出 + 新牌浮现」动画 */
+    .card-deal-out {
+      pointer-events: none;
+      z-index: 5 !important;
+      animation: deal-fly-out 0.52s cubic-bezier(0.45, 0, 0.2, 1) forwards !important;
+    }
+    @keyframes deal-fly-out {
+      0% { opacity: 1; transform: translate(0, 0) rotate(0deg) scale(1); }
+      100% { opacity: 0; transform: translate(-44%, 30%) rotate(-14deg) scale(0.9); }
+    }
+    .card-deal-in {
+      animation: deal-rise-in 0.52s cubic-bezier(0.2, 0.85, 0.3, 1) both;
+    }
+    @keyframes deal-rise-in {
+      0% { transform: scale(0.89) translateY(-6%); filter: brightness(0.75); }
+      100% { transform: scale(1) translateY(0); filter: brightness(1); }
+    }
+
+    /* 卡面内部元素 */
+    .c-row-top, .c-row-bot { position: relative; z-index: 3; display: flex; justify-content: space-between; align-items: center; }
+    .c-row-bot { align-items: flex-end; }
+    .c-brand { display: flex; align-items: center; gap: 9px; font-size: 16.5px; font-weight: 800; letter-spacing: -0.01em; }
+    .c-logo-pill {
+      width: 29px; height: 29px; border-radius: 8px; background: rgba(255,255,255,0.95);
+      display: grid; place-items: center; font-size: 15px; font-weight: 900;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+    }
+    .c-sku-tag {
+      padding: 4px 10px; border-radius: 999px; font-size: 11.5px; font-weight: 700;
+      background: rgba(255,255,255,0.17); border: 1px solid rgba(255,255,255,0.26);
+      backdrop-filter: blur(4px);
+    }
+    .c-num { font-size: 10.5px; letter-spacing: 0.2em; opacity: 0.74; font-weight: 600; }
+    .c-holder { font-size: 11px; letter-spacing: 0.14em; opacity: 0.9; font-weight: 700; margin-top: 2px; }
+    .c-right-meta { display: flex; align-items: center; gap: 9px; }
+    .c-price { font-size: 20px; font-weight: 900; letter-spacing: -0.02em; }
+    .c-gold-chip {
+      width: 33px; height: 23px; border-radius: 5px; position: relative;
+      background: linear-gradient(145deg, #ffefb8, #f4c855 52%, #d89f26);
+      box-shadow: inset 0 0 0 1px rgba(120,80,8,0.35), inset 0 1px 0 rgba(255,255,255,0.75);
+    }
+    .c-gold-chip::after {
+      content: ""; position: absolute; inset: 5px 7px;
+      border: 1px solid rgba(120,80,8,0.35); border-radius: 2px;
+    }
+
+    /* 卡片右下悬浮小胶囊（动态浮动） */
+    .floating-mini-toast {
+      position: absolute; right: -8px; bottom: -10px; z-index: 8;
+      background: var(--l-ink); color: var(--l-bg);
+      padding: 6px 12px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 700;
+      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 12px 24px -6px rgba(0,0,0,0.32);
+      animation: toast-bob 4.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+    @keyframes toast-bob {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-4px); }
+    }
+    .toast-check {
+      width: 16px; height: 16px; border-radius: 50%; background: #10b981; color: #fff;
+      display: grid; place-items: center; font-size: 10px; font-weight: 900;
+    }
+
+    /* 不同规格对应的卡面渐变主题 */
+    .theme-emerald { background: linear-gradient(132deg, #355943 0%, #203a2b 56%, #13251b 100%); }
+    .theme-terracotta { background: linear-gradient(132deg, #b85025 0%, #8e3815 56%, #61230a 100%); }
+    .theme-obsidian { background: linear-gradient(132deg, #474139 0%, #2b2722 56%, #191613 100%); }
+    .theme-royal { background: linear-gradient(132deg, #4b6cb7 0%, #304f92 56%, #1d3363 100%); }
+
+    /* 橱窗右侧商品核心信息 */
+    .hero-info { display: flex; flex-direction: column; justify-content: center; gap: 12px; min-width: 0; }
+    .info-pills { display: flex; flex-wrap: wrap; gap: 7px; }
+    .tag-brand { background: var(--l-brand-soft); color: var(--l-brand); padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .tag-sage { background: var(--l-sage-soft); color: var(--l-sage-strong); padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .hero-title { font-size: 25px; font-weight: 900; line-height: 1.28; color: var(--l-ink); letter-spacing: -0.015em; }
+    .hero-desc { font-size: 13.5px; color: var(--l-ink-3); line-height: 1.62; }
+    .hero-price-row {
+      display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px;
+      padding-top: 12px; margin-top: 2px; border-top: 1px solid var(--l-border);
+    }
+    .big-price { color: var(--l-brand); font-size: 34px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+    .big-price small { font-size: 18px; font-weight: 800; margin-right: 2px; }
+    .orig-strike { font-size: 13px; color: var(--l-ink-3); text-decoration: line-through; margin-left: 8px; font-weight: 500; }
+    .hint-hover { font-size: 12px; color: var(--l-ink-3); }
+
+    /* ==========================================================
+       核心亮点 2：多规格商品 — 每个规格都是独立高质感卡片！
+       ========================================================== */
+    .sku-section { margin-top: 20px; }
+    .sec-head {
+      display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 0 4px;
+    }
+    .sec-title { font-size: 15px; font-weight: 800; color: var(--l-ink); display: flex; align-items: center; gap: 8px; }
+    .sec-sub { font-size: 12px; color: var(--l-ink-3); }
+
+    .sku-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .sku-card {
+      position: relative;
+      background: var(--l-surface);
+      border: 2px solid var(--l-border);
+      border-radius: 20px;
+      padding: 18px 18px 15px;
+      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+    }
+    .sku-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--l-border-strong);
+      box-shadow: 0 12px 26px -12px rgba(30, 26, 21, 0.12);
+    }
+    .sku-card.is-selected {
+      border-color: var(--l-brand);
+      background: color-mix(in srgb, var(--l-brand-soft) 42%, var(--l-surface));
+      box-shadow: 0 14px 30px -12px rgba(188, 63, 22, 0.24);
+      transform: translateY(-2px);
+    }
+    .sc-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .sc-badge {
+      font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;
+      background: var(--l-surface-2); color: var(--l-ink-2);
+    }
+    .sku-card.is-selected .sc-badge { background: var(--l-brand); color: #fff; }
+    .sc-radio {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 2px solid var(--l-border-strong);
+      display: grid; place-items: center; font-size: 11px; font-weight: 900; color: transparent;
+      transition: 0.16s;
+    }
+    .sku-card.is-selected .sc-radio {
+      border-color: var(--l-brand); background: var(--l-brand); color: #fff;
+    }
+    .sc-name { font-size: 15.5px; font-weight: 800; color: var(--l-ink); line-height: 1.35; margin-top: 2px; }
+    .sc-desc-line { font-size: 12px; color: var(--l-ink-3); margin-top: 3px; line-height: 1.45; }
+    .sc-price-line { display: flex; align-items: baseline; gap: 4px; margin-top: 4px; }
+    .sc-yen { font-size: 14px; font-weight: 800; color: var(--l-brand); }
+    .sc-val { font-size: 24px; font-weight: 900; color: var(--l-brand); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .sc-unit { font-size: 11.5px; color: var(--l-ink-3); margin-left: 2px; }
+    .sc-footer {
+      padding-top: 10px; border-top: 1px dashed var(--l-border);
+      display: flex; align-items: center; justify-content: space-between; font-size: 11.5px; color: var(--l-ink-3);
+    }
+    .sc-stock-ok { color: var(--l-green); font-weight: 700; }
+
+    /* ==========================================================
+       核心亮点 3：正文长说明区 + 底部常驻悬浮毛玻璃购买栏
+       ========================================================== */
+    .article-card {
+      margin-top: 20px;
+      background: var(--l-surface); border: 1px solid var(--l-border);
+      box-shadow: var(--l-shadow); border-radius: 24px; padding: 30px 34px;
+    }
+    .article-head {
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 16px; margin-bottom: 20px; border-bottom: 1px solid var(--l-border);
+    }
+    .article-head h2 { font-size: 17px; font-weight: 800; color: var(--l-ink); }
+
     .rich-doc h3 {
       font-size: 16px; font-weight: 800; color: var(--l-ink);
       margin: 24px 0 10px; display: flex; align-items: center; gap: 8px;
@@ -120,163 +429,40 @@
       font-size: 13.5px; line-height: 1.72;
     }
 
-    /* ==========================================================================
-       方向 A：砍掉傻大假卡图！紧凑横向商品头 + 正文阅读流 + 底部常驻悬浮胶囊收银栏
-       ========================================================================== */
-    .mode-a-wrap { max-width: 840px; margin: 0 auto; padding: 24px 20px 140px; }
-    .back-mini { display: inline-flex; align-items: center; gap: 5px; font-size: 13.5px; font-weight: 600; color: var(--l-ink-3); margin-bottom: 16px; }
-    .back-mini:hover { color: var(--l-ink); }
-
-    .compact-hero {
-      background: var(--l-surface); border: 1px solid var(--l-border); box-shadow: var(--l-shadow);
-      border-radius: 22px; padding: 24px 28px;
-      display: flex; align-items: center; justify-content: space-between; gap: 22px;
-    }
-    .ch-left { display: flex; align-items: center; gap: 18px; min-width: 0; }
-    .ch-icon {
-      width: 64px; height: 64px; border-radius: 18px; flex: none;
-      display: grid; place-items: center; color: #fff; font-size: 26px; font-weight: 900;
-      box-shadow: 0 12px 24px -8px rgba(31, 54, 104, 0.45);
-    }
-    .ch-icon.gemini { background: linear-gradient(135deg, #4b6cb7, #1f3668); }
-    .ch-icon.gpt { background: linear-gradient(135deg, #2d5a47, #132a21); }
-    .ch-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
-    .tag-brand { background: var(--l-brand-soft); color: var(--l-brand); padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; }
-    .tag-green { background: var(--l-green-soft); color: var(--l-green); padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 700; }
-    .ch-title { font-size: 22px; font-weight: 900; color: var(--l-ink); line-height: 1.3; }
-    .ch-sub { font-size: 13px; color: var(--l-ink-3); margin-top: 4px; }
-    .ch-right { text-align: right; flex: none; }
-    .ch-price { color: var(--l-brand); font-size: 32px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
-    .ch-price small { font-size: 17px; font-weight: 800; margin-right: 2px; }
-    .ch-stock { font-size: 12px; color: var(--l-ink-3); margin-top: 6px; }
-
-    /* 多规格横向条（仅多规格显示） */
-    .inline-sku-bar {
-      margin-top: 14px; background: var(--l-surface); border: 1px solid var(--l-border);
-      border-radius: 18px; padding: 14px 20px;
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;
-    }
-    .sku-pills { display: flex; flex-wrap: wrap; gap: 8px; }
-    .sku-pill {
-      padding: 8px 14px; border-radius: 11px; border: 1.5px solid var(--l-border-strong);
-      background: var(--l-surface-2); font-size: 13px; font-weight: 700; color: var(--l-ink-2);
-    }
-    .sku-pill.active { border-color: var(--l-brand); background: var(--l-brand-soft); color: var(--l-brand); }
-
-    /* 正文说明卡片（首屏直接可读！） */
-    .article-card {
-      margin-top: 16px; background: var(--l-surface); border: 1px solid var(--l-border);
-      box-shadow: var(--l-shadow); border-radius: 22px; padding: 28px 32px;
-    }
-
-    /* 底部常驻悬浮毛玻璃收银坞（不管滚到哪，购买按钮永远在最顺手的地方！） */
+    /* 底部常驻悬浮结账坞 */
     .floating-dock {
-      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 60;
-      width: calc(100% - 32px); max-width: 840px;
+      position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); z-index: 70;
+      width: calc(100% - 32px); max-width: 920px;
       background: color-mix(in srgb, var(--l-surface) 92%, transparent);
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--l-border-strong);
-      box-shadow: 0 18px 48px -10px rgba(20, 16, 12, 0.24);
-      border-radius: 20px; padding: 12px 16px 12px 22px;
+      box-shadow: 0 20px 50px -10px rgba(20, 16, 12, 0.28);
+      border-radius: 22px; padding: 12px 16px 12px 24px;
       display: flex; align-items: center; justify-content: space-between; gap: 16px;
     }
-    .dock-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .dock-price-label { font-size: 12px; color: var(--l-ink-3); font-weight: 600; }
-    .dock-total { font-size: 24px; font-weight: 900; color: var(--l-brand); font-variant-numeric: tabular-nums; }
-    .dock-note { font-size: 12px; color: var(--l-sage-strong); background: var(--l-sage-soft); padding: 4px 10px; border-radius: 8px; font-weight: 600; }
-    .dock-right { display: flex; align-items: center; gap: 12px; }
+    .dock-left { display: flex; align-items: center; gap: 16px; min-width: 0; }
+    .dock-sel-name { font-size: 12px; color: var(--l-ink-2); font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+    .dock-total { font-size: 25px; font-weight: 900; color: var(--l-brand); font-variant-numeric: tabular-nums; line-height: 1.1; }
+    .dock-note { font-size: 12px; color: var(--l-sage-strong); background: var(--l-sage-soft); padding: 5px 11px; border-radius: 9px; font-weight: 700; white-space: nowrap; }
+    .dock-right { display: flex; align-items: center; gap: 12px; flex: none; }
     .stepper {
-      display: inline-flex; align-items: center; border-radius: 12px;
+      display: inline-flex; align-items: center; border-radius: 13px;
       border: 1px solid var(--l-border-strong); background: var(--l-surface-2); overflow: hidden;
     }
-    .step-b { width: 34px; height: 38px; font-size: 17px; font-weight: 800; color: var(--l-ink); }
-    .step-v { width: 38px; height: 38px; text-align: center; font-size: 14px; font-weight: 800; color: var(--l-ink); border-left: 1px solid var(--l-border); border-right: 1px solid var(--l-border); background: transparent; outline: none; border-top: none; border-bottom: none; }
+    .step-b { width: 36px; height: 40px; font-size: 18px; font-weight: 800; color: var(--l-ink); }
+    .step-b:hover { background: rgba(0,0,0,0.05); }
+    .step-v {
+      width: 40px; height: 40px; text-align: center; font-size: 14px; font-weight: 800; color: var(--l-ink);
+      border-left: 1px solid var(--l-border); border-right: 1px solid var(--l-border);
+      background: transparent; outline: none; border-top: none; border-bottom: none;
+    }
     .dock-buy-btn {
-      height: 44px; padding: 0 28px; border-radius: 14px;
-      background: var(--l-brand); color: #fff9f2; font-size: 15px; font-weight: 800;
-      box-shadow: 0 8px 20px -6px rgba(188, 63, 22, 0.55);
+      height: 46px; padding: 0 30px; border-radius: 15px;
+      background: var(--l-brand); color: #fff9f2; font-size: 15.5px; font-weight: 800;
+      box-shadow: 0 10px 22px -6px rgba(188, 63, 22, 0.55);
       transition: transform 0.15s, background 0.15s; white-space: nowrap;
     }
     .dock-buy-btn:hover { background: var(--l-brand-hover); transform: translateY(-1px); }
-
-    /* ==========================================================================
-       方向 B：根本不跳详情页！首页点击商品直接滑出「右侧半屏购买抽屉」（说明再长底部按钮也焊死不动）
-       ========================================================================== */
-    .mode-b-home { max-width: 1120px; margin: 0 auto; padding: 32px 20px 80px; }
-    .home-tip {
-      background: var(--l-brand-soft); border: 1px solid var(--l-border-strong); color: var(--l-ink);
-      padding: 13px 18px; border-radius: 14px; font-size: 13.5px; font-weight: 600; margin-bottom: 24px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    }
-    .prod-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-    .shop-card {
-      background: var(--l-surface); border: 1px solid var(--l-border); border-radius: 20px;
-      padding: 20px; cursor: pointer; transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s;
-      display: flex; flex-direction: column; justify-content: space-between; gap: 16px;
-    }
-    .shop-card:hover { transform: translateY(-3px); box-shadow: var(--l-shadow); border-color: var(--l-brand); }
-    .sc-head { display: flex; align-items: center; gap: 12px; }
-    .sc-title { font-size: 16.5px; font-weight: 800; color: var(--l-ink); }
-    .sc-desc { font-size: 13px; color: var(--l-ink-3); line-height: 1.55; margin-top: 6px; }
-    .sc-foot { display: flex; align-items: center; justify-content: space-between; padding-top: 14px; border-top: 1px solid var(--l-border); }
-    .sc-price { font-size: 22px; font-weight: 900; color: var(--l-brand); }
-    .sc-cta { background: var(--l-brand); color: #fff; padding: 7px 15px; border-radius: 10px; font-size: 12.5px; font-weight: 800; }
-
-    /* 右侧购买抽屉 */
-    .drawer-backdrop {
-      position: fixed; inset: 0; z-index: 85; background: rgba(15, 12, 9, 0.48);
-      backdrop-filter: blur(2px); display: flex; justify-content: flex-end;
-    }
-    .drawer-panel {
-      width: 100%; max-width: 580px; height: 100%;
-      background: var(--l-surface); border-left: 1px solid var(--l-border);
-      box-shadow: -20px 0 60px rgba(0,0,0,0.25);
-      display: flex; flex-direction: column;
-    }
-    .drawer-header {
-      padding: 20px 26px; border-bottom: 1px solid var(--l-border);
-      display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
-      background: var(--l-surface);
-    }
-    .drawer-close {
-      width: 34px; height: 34px; border-radius: 999px; background: var(--l-surface-2);
-      color: var(--l-ink-2); font-size: 20px; display: grid; place-items: center; flex: none;
-    }
-    .drawer-scroll {
-      flex: 1; overflow-y: auto; padding: 22px 26px 28px;
-    }
-    .drawer-footer {
-      padding: 16px 26px; border-top: 1px solid var(--l-border);
-      background: var(--l-surface-2);
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .df-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-
-    /* ==========================================================================
-       方向 C：深色高级横幅买卡头 + 往下滚自动弹出「顶部常驻吸顶购买条」（Apple 商店风）
-       ========================================================================== */
-    .top-sticky-buybar {
-      position: sticky; top: 47px; z-index: 65;
-      background: color-mix(in srgb, var(--l-surface) 93%, transparent);
-      backdrop-filter: blur(12px); border-bottom: 1px solid var(--l-border-strong);
-    }
-    .tsb-inner {
-      max-width: 960px; margin: 0 auto; padding: 10px 20px;
-      display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    }
-    .dark-banner-wrap { max-width: 960px; margin: 0 auto; padding: 24px 20px 80px; }
-    .dark-hero-card {
-      background: linear-gradient(135deg, #23201b 0%, #171411 100%);
-      color: #f7f3eb; border-radius: 26px; padding: 32px 36px;
-      box-shadow: 0 24px 48px -16px rgba(20, 16, 12, 0.32);
-      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px;
-    }
-    .dh-title { font-size: 28px; font-weight: 900; margin-top: 10px; }
-    .dh-sub { font-size: 14px; color: rgba(247,243,235,0.7); margin-top: 6px; max-width: 520px; line-height: 1.6; }
-    .dh-action-box {
-      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.14);
-      border-radius: 20px; padding: 20px 24px; min-width: 280px;
-    }
 
     /* 首页公告弹窗 */
     .modal-mask {
@@ -288,13 +474,14 @@
       background: var(--l-surface); border: 1px solid var(--l-border); box-shadow: var(--l-shadow); overflow: hidden;
     }
 
-    @media (max-width: 760px) {
-      .compact-hero { flex-direction: column; align-items: flex-start; }
-      .ch-right { text-align: left; }
-      .floating-dock { padding: 12px 14px; }
+    @media (max-width: 820px) {
+      .hero-showcase { grid-template-columns: 1fr; padding: 22px; gap: 22px; }
+      .card-stage-wrap { max-width: 360px; margin: 0 auto; width: 100%; }
+      .sku-cards-grid { grid-template-columns: 1fr; }
+      .article-card { padding: 22px 20px; }
       .dock-note, .nav-links { display: none; }
-      .prod-grid { grid-template-columns: 1fr; }
-      .dh-action-box { width: 100%; }
+      .floating-dock { padding: 11px 14px; }
+      .dock-buy-btn { padding: 0 20px; font-size: 14px; }
     }
   </style>
 </head>
@@ -304,19 +491,21 @@
   <div class="demo-bar">
     <div class="demo-bar-inner">
       <div class="demo-group">
-        <span class="demo-tag">3种全新思路</span>
-        <button id="tab-a" class="dbtn active" onclick="switchTab('a')">新方案A：去大图紧凑头 + 底部常驻悬浮购买栏（最推荐）</button>
-        <button id="tab-b" class="dbtn" onclick="switchTab('b')">新方案B：不跳新页！首页点商品滑出右侧购买抽屉</button>
-        <button id="tab-c" class="dbtn" onclick="switchTab('c')">新方案C：黑金横幅头 + 顶部常驻吸顶购买条</button>
+        <span class="demo-tag">方案A 精修版</span>
+        <button id="btn-multi" class="dbtn active" onclick="switchProduct('multi')">
+          示例1：多规格商品（点下方规格卡片看 3D 抽牌换卡动效！）
+        </button>
+        <button id="btn-single" class="dbtn" onclick="switchProduct('single')">
+          示例2：单规格商品（自动隐藏规格区）
+        </button>
       </div>
       <div class="demo-group">
-        <button id="btn-sku" class="dbtn" onclick="toggleSku()">切换：多规格商品</button>
-        <button class="dbtn amber" onclick="document.getElementById('modal').classList.remove('hidden')">🔔 首页弹窗公告</button>
+        <button class="dbtn amber" onclick="document.getElementById('modal').classList.remove('hidden')">🔔 预览首页弹窗公告</button>
       </div>
     </div>
   </div>
 
-  <!-- 网站正式导航栏 -->
+  <!-- 正式网站导航栏 -->
   <header class="site-header">
     <div class="header-inner">
       <div class="header-left">
@@ -337,200 +526,88 @@
     </div>
   </header>
 
-  <!-- ================= 新方案 A：紧凑商品头 + 首屏直读长说明 + 底部常驻悬浮胶囊收银栏 ================= -->
-  <div id="view-a">
-    <div class="mode-a-wrap">
-      <a href="javascript:void(0)" class="back-mini">← 返回首页商品列表</a>
-
-      <!-- 砍掉占半屏的傻大假卡图，换成精致横向名片 -->
-      <div class="compact-hero">
-        <div class="ch-left">
-          <div id="a-icon" class="ch-icon gemini">✦</div>
-          <div>
-            <div class="ch-badges">
-              <span id="a-cat" class="tag-brand">Gemini 专区</span>
-              <span class="tag-green">⚡ 付款后 10 秒自动发卡 · 邮箱同步备份</span>
-            </div>
-            <h1 id="a-title" class="ch-title">Gemini学生认证 sheerid 认证</h1>
-            <p id="a-sub" class="ch-sub">免注册直接下单，一键完成 Google Gemini 官方学生资格认证。</p>
-          </div>
-        </div>
-        <div class="ch-right">
-          <div class="ch-price"><small>¥</small><span id="a-price">15.00</span></div>
-          <div id="a-stock" class="ch-stock">现货充足（库存 9999）</div>
-        </div>
-      </div>
-
-      <!-- 多规格切换条（单规格自动隐藏） -->
-      <div id="a-sku-bar" class="inline-sku-bar hidden">
-        <span style="font-size:13px;font-weight:800;color:var(--l-ink);">选择套餐规格：</span>
-        <div id="a-sku-pills" class="sku-pills"></div>
-      </div>
-
-      <!-- 首屏黄金位置直接阅读长篇商品说明！ -->
-      <article class="article-card">
-        <div id="a-doc" class="rich-doc"></div>
-      </article>
+  <main class="page-wrap">
+    <div class="top-bar-row">
+      <a href="javascript:void(0)" class="back-mini">← 返回首页</a>
+      <span class="live-badge"><span class="pulse-dot"></span>库存实时同步 · 付款后 10 秒自动发卡</span>
     </div>
 
-    <!-- 底部常驻悬浮毛玻璃收银坞：不管往下滚多远看长说明，购买按钮永远钉在屏幕下方最顺手处！ -->
-    <div class="floating-dock">
-      <div class="dock-left">
-        <div>
-          <div class="dock-price-label" id="dock-sku-name">应付总计</div>
-          <div class="dock-total">¥<span id="dock-total-val">15.00</span></div>
+    <!-- 1. 紧凑横向高定橱窗头：左 3D 动效会员卡 + 右商品核心信息（高度严丝合缝，零留白！） -->
+    <section class="hero-showcase">
+      <div class="card-stage-wrap" id="card-stage">
+        <div class="card-breathe-holder">
+          <div class="deck-slot" id="deck-slot">
+            <div class="deck-underlay"></div>
+            <!-- 3D 动态会员卡由 JS 渲染并支持抽牌动画 -->
+          </div>
         </div>
-        <span class="dock-note">✉️ 付款即显卡密 + 自动发邮箱</span>
-      </div>
-      <div class="dock-right">
-        <div class="stepper">
-          <button class="step-b" onclick="addQty(-1)">−</button>
-          <input class="step-v" id="dock-qty" value="1" readonly />
-          <button class="step-b" onclick="addQty(1)">+</button>
+        <div class="floating-mini-toast">
+          <span class="toast-check">✓</span>
+          <span>付款秒发卡密 · 同步发邮箱</span>
         </div>
-        <button class="dock-buy-btn" onclick="alert('点击直接进入填邮箱 & 支付宝扫码收银台！')">
-          ⚡ 立即购买
-        </button>
       </div>
+
+      <div class="hero-info">
+        <div class="info-pills">
+          <span id="p-cat" class="tag-brand">OpenAI 专区</span>
+          <span class="tag-sage">⚡ 24h 自动交付</span>
+          <span class="tag-sage">免注册邮箱直购</span>
+        </div>
+        <h1 id="p-title" class="hero-title">ChatGPT Plus 官方会员直充卡密</h1>
+        <p id="p-desc" class="hero-desc">支持老号无损续费与新号开通，官方正规订阅通道，质保期内掉号包补。鼠标移到左侧卡片可体验 3D 金属光感折射。</p>
+        <div class="hero-price-row">
+          <div>
+            <span class="big-price"><small>¥</small><span id="p-price">138.00</span></span>
+            <span id="p-orig" class="orig-strike">¥168.00</span>
+          </div>
+          <span class="hint-hover" id="p-hint">✨ 点下方不同规格卡片，左侧会员卡会联动换卡</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. 多规格独立卡片区（每个规格都是一张完整的独立卡片，单规格商品自动隐藏！） -->
+    <section id="sku-sec" class="sku-section">
+      <div class="sec-head">
+        <div class="sec-title">📦 选择套餐规格</div>
+        <div class="sec-sub">每个套餐独立库存实时计价，点选即可切换</div>
+      </div>
+      <div id="sku-grid" class="sku-cards-grid">
+        <!-- 独立规格卡片由 JS 渲染 -->
+      </div>
+    </section>
+
+    <!-- 3. 正文长说明区（紧接其下，写几千字长教程、宽表格都舒展好读） -->
+    <article class="article-card">
+      <div class="article-head">
+        <span style="font-size:18px;">📖</span>
+        <h2>商品详细介绍与使用说明</h2>
+      </div>
+      <div id="doc-body" class="rich-doc"></div>
+    </article>
+  </main>
+
+  <!-- 4. 底部常驻悬浮毛玻璃收银坞（不管长说明滚到哪，购买按钮永远钉在屏幕下方！） -->
+  <div class="floating-dock">
+    <div class="dock-left">
+      <div>
+        <div id="dock-sku-label" class="dock-sel-name">已选：月卡兑换码 · 30天</div>
+        <div class="dock-total">¥<span id="dock-total">138.00</span></div>
+      </div>
+      <span class="dock-note">✉️ 页面直接看卡密 + 邮箱备份</span>
+    </div>
+    <div class="dock-right">
+      <div class="stepper">
+        <button class="step-b" onclick="changeQty(-1)">−</button>
+        <input class="step-v" id="dock-qty" value="1" readonly />
+        <button class="step-b" onclick="changeQty(1)">+</button>
+      </div>
+      <button class="dock-buy-btn" onclick="alert('正式上线后，点击这里直接进入填邮箱 & 支付宝扫码付款页！')">
+        ⚡ 立即购买
+      </button>
     </div>
   </div>
 
-  <!-- ================= 新方案 B：不跳详情页！首页点击商品直接滑出右侧半屏购买抽屉 ================= -->
-  <div id="view-b" class="hidden">
-    <div class="mode-b-home">
-      <div class="home-tip">
-        <span>💡 <strong>方案B 理念：干脆连独立的商品详情页都省掉！</strong>买家在首页点任意商品，右侧直接滑出购买抽屉（中间看长说明，底部焊死购买按钮）。</span>
-        <button class="sc-cta" onclick="openDrawer('single')">点击打开抽屉体验 →</button>
-      </div>
-
-      <div class="prod-grid">
-        <div class="shop-card" onclick="openDrawer('single')">
-          <div>
-            <div class="sc-head">
-              <div class="ch-icon gemini" style="width:44px;height:44px;border-radius:12px;font-size:19px;">✦</div>
-              <div>
-                <span class="tag-green">现货秒发</span>
-                <div class="sc-title" style="margin-top:3px;">Gemini学生认证 sheerid 认证</div>
-              </div>
-            </div>
-            <p class="sc-desc">一键通过 Google Gemini 学生优惠核验，自动发送认证卡密与图文教程。</p>
-          </div>
-          <div class="sc-foot">
-            <span class="sc-price">¥15.00</span>
-            <span class="sc-cta">查看说明 / 购买</span>
-          </div>
-        </div>
-
-        <div class="shop-card" onclick="openDrawer('multi')">
-          <div>
-            <div class="sc-head">
-              <div class="ch-icon gpt" style="width:44px;height:44px;border-radius:12px;font-size:19px;">◈</div>
-              <div>
-                <span class="tag-brand">3种套餐</span>
-                <div class="sc-title" style="margin-top:3px;">ChatGPT Plus 官方会员直充卡密</div>
-              </div>
-            </div>
-            <p class="sc-desc">支持老号无损续费与新号开通，官方订阅通道，30天完整质保。</p>
-          </div>
-          <div class="sc-foot">
-            <span class="sc-price">¥138.00 <small style="font-size:12px;font-weight:500;color:var(--l-ink-3);">起</small></span>
-            <span class="sc-cta">选规格 / 购买</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 右侧滑出抽屉 -->
-    <div id="b-drawer" class="drawer-backdrop" onclick="if(event.target===this)closeDrawer()">
-      <div class="drawer-panel">
-        <!-- 抽屉固定头部 -->
-        <div class="drawer-header">
-          <div>
-            <div class="ch-badges">
-              <span id="b-cat" class="tag-brand">Gemini 专区</span>
-              <span class="tag-green">⚡ 10秒自动发货</span>
-            </div>
-            <h2 id="b-title" style="font-size:20px;font-weight:900;color:var(--l-ink);">Gemini学生认证 sheerid 认证</h2>
-          </div>
-          <button class="drawer-close" onclick="closeDrawer()">×</button>
-        </div>
-
-        <!-- 抽屉中间独立滚动看长篇教程 -->
-        <div class="drawer-scroll">
-          <div id="b-sku-wrap" class="hidden" style="margin-bottom:20px;">
-            <div style="font-size:12.5px;font-weight:800;color:var(--l-ink-2);margin-bottom:8px;">选择套餐规格</div>
-            <div id="b-sku-pills" class="sku-pills"></div>
-          </div>
-          <div id="b-doc" class="rich-doc"></div>
-        </div>
-
-        <!-- 抽屉底部焊死购买栏（无论中间教程滚到哪，购买按钮纹丝不动！） -->
-        <div class="drawer-footer">
-          <div class="df-row">
-            <div>
-              <span style="font-size:12px;color:var(--l-ink-3);">应付金额：</span>
-              <strong style="font-size:24px;font-weight:900;color:var(--l-brand);">¥<span id="b-total">15.00</span></strong>
-            </div>
-            <div class="stepper">
-              <button class="step-b" onclick="addQty(-1)">−</button>
-              <input class="step-v" id="b-qty" value="1" readonly />
-              <button class="step-b" onclick="addQty(1)">+</button>
-            </div>
-          </div>
-          <button class="dock-buy-btn" style="width:100%;" onclick="alert('点击直接进入填邮箱 & 支付宝扫码收银台！')">
-            ⚡ 立即购买（付款即显卡密 + 发邮箱）
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= 新方案 C：黑金横幅头 + 顶部常驻吸顶购买条 ================= -->
-  <div id="view-c" class="hidden">
-    <!-- 顶部常驻吸顶购买条 -->
-    <div class="top-sticky-buybar">
-      <div class="tsb-inner">
-        <div style="display:flex;align-items:center;gap:12px;min-width:0;">
-          <a href="javascript:void(0)" style="font-size:13px;color:var(--l-ink-3);font-weight:700;">← 首页</a>
-          <span style="opacity:0.25;">|</span>
-          <strong id="c-bar-title" style="font-size:15px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Gemini学生认证 sheerid 认证</strong>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px;flex:none;">
-          <strong style="font-size:20px;font-weight:900;color:var(--l-brand);">¥<span id="c-bar-total">15.00</span></strong>
-          <div class="stepper">
-            <button class="step-b" style="height:34px;width:30px;" onclick="addQty(-1)">−</button>
-            <input class="step-v" style="height:34px;width:34px;" id="c-qty" value="1" readonly />
-            <button class="step-b" style="height:34px;width:30px;" onclick="addQty(1)">+</button>
-          </div>
-          <button class="dock-buy-btn" style="height:38px;padding:0 20px;font-size:13.5px;" onclick="alert('点击直接进入填邮箱 & 支付宝扫码收银台！')">
-            ⚡ 立即购买
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="dark-banner-wrap">
-      <div class="dark-hero-card">
-        <div>
-          <span style="background:rgba(52,211,153,0.18);color:#6ee7b7;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:700;">⚡ 自动交付 · 付款秒发卡密与邮箱</span>
-          <h1 id="c-title" class="dh-title">Gemini学生认证 sheerid 认证</h1>
-          <p id="c-sub" class="dh-sub">一键完成 Google Gemini 官方学生资格认证，无需海外学生证材料，24 小时全自动发货。</p>
-          <div id="c-sku-pills" class="sku-pills" style="margin-top:16px;"></div>
-        </div>
-        <div class="dh-action-box">
-          <div style="font-size:12px;color:rgba(255,255,255,0.6);">当前售价</div>
-          <div style="font-size:34px;font-weight:900;color:#ff8b5e;margin:4px 0 14px;">¥<span id="c-price">15.00</span></div>
-          <button class="dock-buy-btn" style="width:100%;" onclick="alert('点击直接进入填邮箱 & 支付宝扫码收银台！')">⚡ 立即下单购买</button>
-        </div>
-      </div>
-
-      <article class="article-card" style="margin-top:22px;">
-        <div id="c-doc" class="rich-doc"></div>
-      </article>
-    </div>
-  </div>
-
-  <!-- 首页公告弹窗 -->
+  <!-- 首页公告弹窗预览 -->
   <div id="modal" class="modal-mask hidden" onclick="if(event.target===this)this.classList.add('hidden')">
     <div class="modal-box">
       <div style="display:flex;align-items:center;gap:12px;padding:22px 24px 12px;">
@@ -543,7 +620,7 @@
       </div>
       <div style="padding:14px 24px;border-top:1px solid var(--l-border);display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:12px;color:var(--l-ink-3);">今日不再提示 · 不再提示</span>
-        <button class="sc-cta" onclick="document.getElementById('modal').classList.add('hidden')">我知道了</button>
+        <button style="background:var(--l-brand);color:#fff;padding:8px 18px;border-radius:10px;font-size:12.5px;font-weight:800;" onclick="document.getElementById('modal').classList.add('hidden')">我知道了</button>
       </div>
     </div>
   </div>
@@ -551,125 +628,239 @@
   <script>
     const LONG_DOC = `
       <div class="warn-box">
-        <strong>📌 购买前必读提示：</strong>本商品为 24 小时全自动发货虚拟卡密。付款成功后页面将<strong>立即展示您的专属认证凭证</strong>，同时系统会自动发送一份备份邮件至您的下单邮箱，请务必核对邮箱填写无误！
+        <strong>📌 购买前必读提示：</strong>本商品为 24 小时全自动发货虚拟卡密。付款成功后页面将<strong>立即展示您的专属卡密凭证</strong>，同时系统会自动发送一份备份邮件至您的下单邮箱，请务必核对邮箱填写无误！
       </div>
       <h3>一、商品包含内容与规格说明</h3>
-      <p>本服务用于一键通过 Google One AI Premium（Gemini Advanced）官方学生优惠资格（SheerID 认证），无需您自己准备海外 edu 邮箱或学生证材料。</p>
+      <p>提供官方正规通道卡密与核验服务，全天候系统自动发卡，无需加微信等待人工客服响应。</p>
       <table>
-        <thead><tr><th>项目</th><th>详细说明</th><th>支持范围</th></tr></thead>
+        <thead><tr><th>项目</th><th>详细说明</th><th>售后保障</th></tr></thead>
         <tbody>
-          <tr><td>发货形式</td><td>付款即发「专属核验链接 / 认证卡密 + 完整图文步骤」</td><td>全球账号通用（美区优先）</td></tr>
-          <tr><td>到账时效</td><td>系统 10 秒内自动发卡，全程无需加微信等人工客服</td><td>7×24 小时全天候自动</td></tr>
-          <tr><td>质保规则</td><td>首次提交核验包通过；若遇核验异常免费补换新码</td><td>首单核验包过</td></tr>
+          <tr><td>发货形式</td><td>付款即发「专属卡密 / 兑换码 + 完整图文激活步骤」</td><td>7×24 小时自动秒发</td></tr>
+          <tr><td>使用门槛</td><td>支持老账号无损升级或直接使用，原有数据 100% 保留</td><td>附带傻瓜式三步指引</td></tr>
+          <tr><td>质保规则</td><td>套餐有效期内全程质保，如遇卡密核验异常包免费补换</td><td>凭订单号随时自助回查</td></tr>
         </tbody>
       </table>
-      <h3>二、详细操作教程（新手 3 分钟完成）</h3>
+      <h3>二、详细使用教程（新手 3 分钟搞定）</h3>
       <ol>
-        <li><strong>第一步（准备网络环境）</strong>：请先开启美国节点网络环境，在浏览器无痕模式下登录您自己的 Google 账号；</li>
-        <li><strong>第二步（进入官方认证页）</strong>：打开订单发货区附带的 Google Gemini 学生专属活动入口，点击「Verify Student Status」获取验证链接；</li>
-        <li><strong>第三步（提交卡密自动过审）</strong>：打开自助核验页，粘贴您的 SheerID 链接与本单卡密，点击提交后等待约 30~60 秒即可显示绿勾通过！</li>
-        <li><strong>第四步（激活会员权益）</strong>：验证通过后返回 Google 页面完成订阅确认，即可立即解锁 Gemini Advanced + 2TB 云空间全部权益。</li>
+        <li><strong>第一步（下单收卡）</strong>：选好上方规格后点击屏幕底部的「立即购买」，输入您的常用邮箱并完成支付宝扫码付款，页面将秒级弹出卡密；</li>
+        <li><strong>第二步（一键激活/核验）</strong>：复制拿到的卡密，前往我们配套的自助激活入口粘贴卡密与账号信息，点击提交即可自动完成开通；</li>
+        <li><strong>第三步（确认权益到账）</strong>：刷新您的账号页面即可看到会员标识生效，全程不超过 3 分钟！</li>
       </ol>
       <h3>三、常见问题解答（FAQ）</h3>
       <ul>
-        <li><strong>Q：我用了好几年的老 Google 账号可以用吗？安全吗？</strong><br/>A：完全可以！直接在您自己的账号上通过官方 SheerID 认证，原有 Gmail 和云盘数据 100% 不受任何影响。</li>
-        <li><strong>Q：万一付完款不小心关掉了浏览器，去哪里看卡密？</strong><br/>A：点击网站顶部菜单栏的<strong>「查订单」</strong>，输入您的下单邮箱和订单号即可随时找回卡密，也可以直接在邮箱收件箱查看。</li>
-        <li><strong>Q：虚拟卡密支持退换吗？</strong><br/>A：数字卡密一经发出无法二次销售，非卡密质量问题不支持无理由退款；如遇卡密报错或无法核验，凭订单号包免费换新！</li>
+        <li><strong>Q：不小心关掉了付款成功页面怎么办？</strong><br/>A：点顶部菜单栏的<strong>「查订单」</strong>，输入您的下单邮箱和订单号即可随时查看完整卡密，邮箱收件箱里也会同步躺着一份备份邮件。</li>
+        <li><strong>Q：往下滑看这么长的说明时，购买按钮去哪了？</strong><br/>A：看屏幕正下方——悬浮胶囊结账栏始终跟着您的视线停在最顺手的位置，选好随时一点即买！</li>
       </ul>
     `;
 
-    const ITEMS = {
-      single: {
-        mark: '✦', cls: 'gemini', cat: 'Gemini 专区',
-        title: 'Gemini学生认证 sheerid 认证',
-        sub: '免注册直接下单，一键完成 Google Gemini 官方学生资格认证。',
-        skus: [{ name: 'Gemini学生认证', price: 15.00, stock: 9999 }]
-      },
+    const PRODUCTS = {
       multi: {
-        mark: '◈', cls: 'gpt', cat: 'OpenAI 专区',
+        brand: 'ChatGPT', mark: '◈', markColor: '#0f7a4d', watermark: 'GPT+', serial: 'LEYRA ···· 0108',
+        cat: 'OpenAI 专区',
         title: 'ChatGPT Plus 官方会员直充卡密',
-        sub: '支持老号无损续费与新号开通，官方正规订阅通道，30天质保。',
+        desc: '支持老号无损续费与新号开通，官方正规订阅通道，质保期内掉号包补。鼠标移到左侧卡片可体验 3D 光感折射。',
         skus: [
-          { name: '月卡兑换码（30天）', price: 138.00, stock: 86 },
-          { name: '季卡兑换码（90天）', price: 398.00, stock: 24 },
-          { name: '成品独享号（含Plus）', price: 149.00, stock: 42 }
+          {
+            name: '月卡兑换码 · 30天',
+            badge: '灵活首选',
+            desc: '适合个人单月尝鲜或老号续费，自助充值秒到账',
+            price: 138.00, orig: '¥168.00', unit: '/ 30天', stock: 86,
+            cardTheme: 'theme-emerald', cardTag: 'PLUS 月卡'
+          },
+          {
+            name: '季卡兑换码 · 90天',
+            badge: '🔥 折合¥132/月',
+            desc: '连续三个月稳定省心免续费，立省 ¥45 最受欢迎',
+            price: 398.00, orig: '¥504.00', unit: '/ 90天', stock: 24,
+            cardTheme: 'theme-terracotta', cardTag: 'PLUS 季卡'
+          },
+          {
+            name: '成品独享号 · 含Plus',
+            badge: '到手即登',
+            desc: '含全新独立邮箱与已开通 Plus 账号，改密完全独享',
+            price: 149.00, orig: '¥188.00', unit: '/ 独享号', stock: 42,
+            cardTheme: 'theme-obsidian', cardTag: 'PRO 独享号'
+          }
+        ]
+      },
+      single: {
+        brand: 'Gemini', mark: '✦', markColor: '#2563eb', watermark: 'PRO', serial: 'LEYRA ···· 0034',
+        cat: 'Gemini 专区',
+        title: 'Gemini学生认证 sheerid 认证',
+        desc: '一键完成 Google Gemini Advanced 官方学生优惠资格核验，付款后自动发送专属核验卡密与完整图文步骤。',
+        skus: [
+          {
+            name: 'Gemini学生认证',
+            badge: '现货秒发',
+            desc: '单次核验包过',
+            price: 15.00, orig: '¥29.00', unit: '/ 次', stock: 9999,
+            cardTheme: 'theme-royal', cardTag: '学生认证'
+          }
         ]
       }
     };
 
-    let curTab = 'a';
-    let skuKey = 'single';
-    let skuIdx = 0;
+    let curProdKey = 'multi';
+    let curSkuIdx = 0;
     let qty = 1;
 
-    function render() {
-      const p = ITEMS[skuKey];
-      const sku = p.skus[skuIdx] || p.skus[0];
-      const total = (sku.price * qty).toFixed(2);
-      const isMulti = p.skus.length > 1;
-      const pillsHTML = isMulti ? p.skus.map((s, i) =>
-        `<button class="sku-pill ${i===skuIdx?'active':''}" onclick="pickSku(${i})">${s.name} · ¥${s.price.toFixed(0)}</button>`
-      ).join('') : '';
+    function createCardElement(p, sku, animateIn) {
+      const el = document.createElement('div');
+      el.className = `leyra-3d-card ${sku.cardTheme} ${animateIn ? 'card-deal-in' : ''}`;
+      el.innerHTML = `
+        <span class="card-watermark">${p.watermark}</span>
+        <span class="card-shine-sweep"></span>
+        <span class="card-glare"></span>
+        <div class="c-row-top">
+          <div class="c-brand">
+            <span class="c-logo-pill" style="color:${p.markColor}">${p.mark}</span>
+            <span>${p.brand}</span>
+          </div>
+          <span class="c-sku-tag">${sku.cardTag}</span>
+        </div>
+        <div class="c-row-bot">
+          <div>
+            <div class="c-num">${p.serial}</div>
+            <div class="c-holder">MEMBER CARD</div>
+          </div>
+          <div class="c-right-meta">
+            <span class="c-price">¥${Math.round(sku.price)}</span>
+            <span class="c-gold-chip"></span>
+          </div>
+        </div>
+      `;
+      bind3DTilt(el);
+      return el;
+    }
 
-      // View A
-      const aIcon = document.getElementById('a-icon');
-      aIcon.className = 'ch-icon ' + p.cls;
-      aIcon.textContent = p.mark;
-      document.getElementById('a-cat').textContent = p.cat;
-      document.getElementById('a-title').textContent = p.title;
-      document.getElementById('a-sub').textContent = p.sub;
-      document.getElementById('a-price').textContent = sku.price.toFixed(2);
-      document.getElementById('a-stock').textContent = `现货充足（库存 ${sku.stock}）`;
-      document.getElementById('a-sku-bar').classList.toggle('hidden', !isMulti);
-      document.getElementById('a-sku-pills').innerHTML = pillsHTML;
-      document.getElementById('a-doc').innerHTML = LONG_DOC;
-      document.getElementById('dock-sku-name').textContent = isMulti ? `已选：${sku.name}` : '应付总计';
-      document.getElementById('dock-total-val').textContent = total;
-      document.getElementById('dock-qty').value = qty;
-
-      // View B
-      document.getElementById('b-cat').textContent = p.cat;
-      document.getElementById('b-title').textContent = p.title;
-      document.getElementById('b-sku-wrap').classList.toggle('hidden', !isMulti);
-      document.getElementById('b-sku-pills').innerHTML = pillsHTML;
-      document.getElementById('b-doc').innerHTML = LONG_DOC;
-      document.getElementById('b-total').textContent = total;
-      document.getElementById('b-qty').value = qty;
-
-      // View C
-      document.getElementById('c-bar-title').textContent = p.title;
-      document.getElementById('c-bar-total').textContent = total;
-      document.getElementById('c-qty').value = qty;
-      document.getElementById('c-title').textContent = p.title;
-      document.getElementById('c-sub').textContent = p.sub;
-      document.getElementById('c-price').textContent = sku.price.toFixed(2);
-      document.getElementById('c-sku-pills').innerHTML = pillsHTML;
-      document.getElementById('c-doc').innerHTML = LONG_DOC;
-
-      ['a', 'b', 'c'].forEach(t => {
-        document.getElementById('view-' + t).classList.toggle('hidden', curTab !== t);
-        document.getElementById('tab-' + t).className = curTab === t ? 'dbtn active' : 'dbtn';
+    function bind3DTilt(card) {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        const mx = (x - 0.5) * 2;
+        const my = (y - 0.5) * 2;
+        card.classList.add('is-tracking');
+        card.style.setProperty('--mx', mx.toFixed(3));
+        card.style.setProperty('--my', my.toFixed(3));
+        card.style.setProperty('--sc', '1.035');
+        card.style.setProperty('--gx', `${(x * 100).toFixed(1)}%`);
+        card.style.setProperty('--gy', `${(y * 100).toFixed(1)}%`);
+      });
+      card.addEventListener('mouseleave', () => {
+        card.classList.remove('is-tracking');
+        card.style.setProperty('--mx', '0');
+        card.style.setProperty('--my', '0');
+        card.style.setProperty('--sc', '1');
       });
     }
 
-    function switchTab(t) { curTab = t; window.scrollTo({top:0}); render(); }
-    function toggleSku() {
-      skuKey = skuKey === 'single' ? 'multi' : 'single';
-      skuIdx = 0; qty = 1;
-      document.getElementById('btn-sku').textContent = skuKey === 'single' ? '切换：多规格商品' : '切换：单规格商品';
-      render();
+    function updateDeckCard(animateDeal) {
+      const slot = document.getElementById('deck-slot');
+      const p = PRODUCTS[curProdKey];
+      const sku = p.skus[curSkuIdx] || p.skus[0];
+      const oldCard = slot.querySelector('.leyra-3d-card:not(.card-deal-out)');
+
+      if (oldCard && animateDeal) {
+        oldCard.classList.remove('card-deal-in');
+        oldCard.classList.add('card-deal-out');
+        setTimeout(() => oldCard.remove(), 540);
+        const nextCard = createCardElement(p, sku, true);
+        slot.appendChild(nextCard);
+      } else {
+        slot.querySelectorAll('.leyra-3d-card').forEach(n => n.remove());
+        slot.appendChild(createCardElement(p, sku, false));
+      }
     }
-    function pickSku(i) { skuIdx = i; render(); }
-    function addQty(d) { qty = Math.max(1, Math.min(99, qty + d)); render(); }
-    function openDrawer(k) { skuKey = k; skuIdx = 0; qty = 1; document.getElementById('b-drawer').classList.remove('hidden'); render(); }
-    function closeDrawer() { document.getElementById('b-drawer').classList.add('hidden'); }
+
+    function renderInfoAndSkus() {
+      const p = PRODUCTS[curProdKey];
+      const sku = p.skus[curSkuIdx] || p.skus[0];
+      const total = (sku.price * qty).toFixed(2);
+      const isMulti = p.skus.length > 1;
+
+      document.getElementById('p-cat').textContent = p.cat;
+      document.getElementById('p-title').textContent = p.title;
+      document.getElementById('p-desc').textContent = p.desc;
+      document.getElementById('p-price').textContent = sku.price.toFixed(2);
+      document.getElementById('p-orig').textContent = sku.orig;
+      document.getElementById('p-hint').textContent = isMulti
+        ? '✨ 点下方不同套餐卡片，左侧 3D 会员卡会联动抽牌换卡'
+        : '✨ 鼠标移到左侧会员卡上，可体验 3D 悬浮与光感折射';
+
+      const skuSec = document.getElementById('sku-sec');
+      const skuGrid = document.getElementById('sku-grid');
+      skuSec.classList.toggle('hidden', !isMulti);
+
+      if (isMulti) {
+        skuGrid.innerHTML = p.skus.map((s, i) => {
+          const sel = i === curSkuIdx;
+          return `
+            <button class="sku-card ${sel ? 'is-selected' : ''}" onclick="selectSku(${i})">
+              <div>
+                <div class="sc-top">
+                  <span class="sc-badge">${s.badge}</span>
+                  <span class="sc-radio">✓</span>
+                </div>
+                <div class="sc-name">${s.name}</div>
+                <div class="sc-desc-line">${s.desc}</div>
+              </div>
+              <div>
+                <div class="sc-price-line">
+                  <span class="sc-yen">¥</span>
+                  <span class="sc-val">${s.price.toFixed(2)}</span>
+                  <span class="sc-unit">${s.unit}</span>
+                </div>
+                <div class="sc-footer">
+                  <span class="sc-stock-ok">● 库存 ${s.stock} 件</span>
+                  <span>⚡ 自动发卡</span>
+                </div>
+              </div>
+            </button>
+          `;
+        }).join('');
+      }
+
+      document.getElementById('dock-sku-label').textContent = isMulti
+        ? `已选：${sku.name}`
+        : `已选：${p.title}`;
+      document.getElementById('dock-total').textContent = total;
+      document.getElementById('dock-qty').value = qty;
+      document.getElementById('doc-body').innerHTML = LONG_DOC;
+
+      document.getElementById('btn-multi').className = curProdKey === 'multi' ? 'dbtn active' : 'dbtn';
+      document.getElementById('btn-single').className = curProdKey === 'single' ? 'dbtn active' : 'dbtn';
+    }
+
+    function switchProduct(key) {
+      if (curProdKey === key) return;
+      curProdKey = key;
+      curSkuIdx = 0;
+      qty = 1;
+      updateDeckCard(true);
+      renderInfoAndSkus();
+    }
+
+    function selectSku(idx) {
+      if (curSkuIdx === idx) return;
+      curSkuIdx = idx;
+      updateDeckCard(true);
+      renderInfoAndSkus();
+    }
+
+    function changeQty(d) {
+      qty = Math.max(1, Math.min(99, qty + d));
+      renderInfoAndSkus();
+    }
+
     function toggleTheme() {
       const dark = document.body.classList.toggle('is-dark');
       document.getElementById('t-ico').textContent = dark ? '🌙' : '☀️';
       document.getElementById('t-txt').textContent = dark ? '深色' : '浅色';
     }
 
-    render();
+    updateDeckCard(false);
+    renderInfoAndSkus();
   </script>
 </body>
 </html>
